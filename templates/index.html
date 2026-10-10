@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamShield AI | Multi-Modal Threat & Fraud Detection Engine</title>
+    <meta name="description" content="ScamShield AI - Advanced multi-modal threat and fraud detection engine for phishing links, fake certificates, deepfakes, and job scams.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #070a13;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-border: rgba(56, 189, 248, 0.18);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.35);
+            --safe-color: #10b981;
+            --warn-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                linear-gradient(to bottom, #070a13, #090e1a);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .shield-icon-wrap {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(99, 102, 241, 0.25));
+            border: 1px solid var(--primary-glow);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+        }
+
+        .shield-icon-wrap svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 2;
+        }
+
+        .brand-text h1 {
+            font-family: var(--font-display);
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        .hero h2 {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.8rem;
+            color: #ffffff;
+        }
+
+        .hero h2 span {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* Category pills */
+        .cat-pills {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .cat-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+
+        /* Input Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 18px;
+            backdrop-filter: blur(16px);
+            padding: 2rem;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+            margin-bottom: 2.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .card:focus-within {
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .input-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .input-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            background: rgba(8, 13, 26, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+            background: rgba(10, 16, 31, 0.95);
+        }
+
+        /* Preset Buttons */
+        .presets-row {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .preset-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-chip:hover {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            transform: translateY(-1px);
+        }
+
+        /* Actions */
+        .actions-row {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-scan {
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #ffffff;
+            padding: 0.75rem 1.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+            transition: all 0.25s ease;
+        }
+
+        .btn-scan:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(37, 99, 235, 0.55);
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        }
+
+        .btn-scan:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Card */
+        #resultContainer {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            border-radius: 18px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            border: 1px solid;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card.safe {
+            background: rgba(6, 78, 59, 0.25);
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.12);
+        }
+
+        .result-card.moderate {
+            background: rgba(120, 53, 15, 0.25);
+            border-color: rgba(245, 158, 11, 0.35);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.12);
+        }
+
+        .result-card.danger {
+            background: rgba(127, 29, 29, 0.25);
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.18);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .badges-cluster {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .badge-threat-type {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+        }
+
+        .safe .badge-risk {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .moderate .badge-risk {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .danger .badge-risk {
+            background: rgba(239, 68, 68, 0.25);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .verdict-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.4rem;
+        }
+
+        /* Meter */
+        .meter-container {
+            margin: 1.5rem 0;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 1.25rem;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meter-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .meter-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .meter-bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .safe .meter-bar-fill {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .moderate .meter-bar-fill {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .danger .meter-bar-fill {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
+        .explanation-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .explanation-text {
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            margin-top: 3.5rem;
+        }
+
+        .tips-heading {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .tip-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 1.3rem;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tip-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .tip-item h4 {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tip-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.82rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #334155;
+            padding: 0.8rem 1.4rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="shield-icon-wrap">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>ScamShield AI</h1>
+                <p>Multi-Modal Threat & Fraud Engine</p>
+            </div>
+        </div>
+
+        <div class="status-badge" id="systemStatus">
+            <span class="pulse-dot"></span>
+            AI Engine Online (Gemini 3.8 Flash)
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h2>Instant <span>Fraud & Scam Intelligence</span></h2>
+        <p>Comprehensive analysis across phishing links, fake credentials & certificates, and deepfake AI video scams.</p>
+        
+        <div class="cat-pills">
+            <span class="cat-pill">🔗 Phishing Links & Job Scams</span>
+            <span class="cat-pill">📜 Fake Degrees & Certificates</span>
+            <span class="cat-pill">🤖 Deepfakes & Fraud Articles</span>
+        </div>
+    </section>
+
+    <!-- Input Card -->
+    <div class="card" id="scanCard">
+        <div class="input-label-row">
+            <label for="messageInput" class="input-label">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Enter Input (URL, Message, Certificate details, or Article text)
+            </label>
+            <span class="input-hint">Shortcut: Ctrl + Enter</span>
+        </div>
+
+        <textarea id="messageInput" placeholder="Paste any suspicious link, job offer text, academic certificate details, or claims from a video/article here..."></textarea>
+
+        <!-- Presets -->
+        <div class="presets-row">
+            <span class="preset-title">Test sample categories:</span>
+            <button class="preset-chip" type="button" onclick="loadSample('telegram')">📱 Telegram Job Scam</button>
+            <button class="preset-chip" type="button" onclick="loadSample('certificate')">📜 Fake Degree Certificate</button>
+            <button class="preset-chip" type="button" onclick="loadSample('deepfake')">🤖 Deepfake Crypto Video</button>
+            <button class="preset-chip" type="button" onclick="loadSample('safe')">🛡️ Legitimate University Portal</button>
+        </div>
+
+        <div class="actions-row">
+            <button class="btn-clear" id="clearBtn" type="button" onclick="clearInput()">Clear</button>
+            <button class="btn-scan" id="scanBtn" type="button" onclick="scanContent()">
+                <div class="spinner" id="loadingSpinner"></div>
+                <span id="scanBtnText">Analyze with ScamShield</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultContainer">
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <div>
+                    <div class="badges-cluster">
+                        <span class="badge badge-risk" id="badgeRisk">High Risk</span>
+                        <span class="badge badge-threat-type" id="badgeThreatType">Phishing Link</span>
+                    </div>
+                    <h3 class="verdict-title" id="verdictHeadline">Verification Result</h3>
+                </div>
+                <span style="font-size: 0.85rem; color: #cbd5e1;" id="scanTimestamp">Just now</span>
+            </div>
+
+            <!-- Risk Meter -->
+            <div class="meter-container">
+                <div class="meter-info">
+                    <span id="meterLabel">Threat Evaluation</span>
+                    <span id="meterValue">High Risk</span>
+                </div>
+                <div class="meter-bar-bg">
+                    <div class="meter-bar-fill" id="meterBar"></div>
+                </div>
+            </div>
+
+            <!-- Crisp AI Explanation -->
+            <div class="explanation-box">
+                <div class="explanation-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    ScamShield AI Analysis
+                </div>
+                <div class="explanation-text" id="explanationText">
+                    Explanation will appear here.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-Modal Threat Categories Info -->
+    <section class="tips-section">
+        <h3 class="tips-heading">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Supported Detection Categories
+        </h3>
+        <div class="tips-grid">
+            <div class="tip-item">
+                <h4>🔗 Category 1: Phishing & Job Scams</h4>
+                <p>Identifies fake internship links, Telegram daily tasks, advance fee requests, and deceptive lookalike domain portals.</p>
+            </div>
+            <div class="tip-item">
+                <h4>📜 Category 2: Forged Certificates</h4>
+                <p>Flags non-accredited diploma mills, unverified professional certificates, forged signatures, and fraudulent fast-track degrees.</p>
+            </div>
+            <div class="tip-item">
+                <h4>🤖 Category 3: Deepfakes & Fake News</h4>
+                <p>Detects AI synthetic voice clones, deepfake celebrity investment promotions, sensationalized fraud articles, and fabricated news.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>ScamShield AI • Powered by Gemini 3.8 Flash • Multi-modal Threat & Fraud Detection</p>
+    </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const samples = {
+        telegram: "Congratulations! You have been selected for online part-time job. Earn ₹5000 daily by rating Google Maps & liking YouTube videos. Contact HR Priya on Telegram @hr_priya_tasks now!",
+        certificate: "Fast-track 24-hour accredited Master's Degree from 'Oxford International Online Academy'. No exams or coursework required. Pay $199 for original holographic diploma certificate delivered to your doorstep.",
+        deepfake: "Viral video circulating of Elon Musk announcing a government-backed quantum investment platform guaranteeing 300% returns in 24 hours. Sign up at bit.ly/musk-quantum-bonus.",
+        safe: "https://www.ox.ac.uk/admissions/graduate/courses - Official University of Oxford graduate admissions portal with accredited entry requirements and direct application guidelines."
+    };
+
+    function loadSample(type) {
+        document.getElementById('messageInput').value = samples[type] || '';
+        document.getElementById('messageInput').focus();
+    }
+
+    function clearInput() {
+        document.getElementById('messageInput').value = '';
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('messageInput').focus();
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3500);
+    }
+
+    document.getElementById('messageInput').addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            scanContent();
+        }
+    });
+
+    async function scanContent() {
+        const input = document.getElementById('messageInput').value.trim();
+        if (!input) {
+            showToast('Please enter text, link, certificate details, or article to analyze.');
+            document.getElementById('messageInput').focus();
+            return;
+        }
+
+        const scanBtn = document.getElementById('scanBtn');
+        const spinner = document.getElementById('loadingSpinner');
+        const scanBtnText = document.getElementById('scanBtnText');
+        const resultContainer = document.getElementById('resultContainer');
+
+        scanBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+        scanBtnText.textContent = 'Analyzing...';
+
+        try {
+            const response = await fetch('/scan-link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: input })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Server error occurred during scan.');
+            }
+
+            let resultObj = data.result;
+
+            if (typeof resultObj === 'string') {
+                try {
+                    let cleaned = resultObj.replace(/```json/gi, '').replace(/```/g, '').trim();
+                    resultObj = JSON.parse(cleaned);
+                } catch (e) {
+                    resultObj = {
+                        is_scam: resultObj.toLowerCase().includes('scam') || resultObj.toLowerCase().includes('high risk'),
+                        risk_level: resultObj.toLowerCase().includes('high') ? 'High Risk' : (resultObj.toLowerCase().includes('safe') ? 'Safe' : 'Medium Risk'),
+                        threat_type: 'General Suspicious Content',
+                        reason: resultObj
+                    };
+                }
+            }
+
+            renderResult(resultObj);
+        } catch (err) {
+            showToast('Analysis error: ' + err.message);
+            console.error('Scan error:', err);
+        } finally {
+            scanBtn.disabled = false;
+            spinner.style.display = 'none';
+            scanBtnText.textContent = 'Analyze with ScamShield';
+        }
+    }
+
+    function renderResult(res) {
+        const resultContainer = document.getElementById('resultContainer');
+        const resultCard = document.getElementById('resultCard');
+        const badgeRisk = document.getElementById('badgeRisk');
+        const badgeThreatType = document.getElementById('badgeThreatType');
+        const verdictHeadline = document.getElementById('verdictHeadline');
+        const meterValue = document.getElementById('meterValue');
+        const meterBar = document.getElementById('meterBar');
+        const explanationText = document.getElementById('explanationText');
+        const scanTimestamp = document.getElementById('scanTimestamp');
+
+        scanTimestamp.textContent = new Date().toLocaleTimeString();
+
+        // Standardize risk_level & threat_type
+        const riskLevel = res.risk_level || (res.is_scam ? 'High Risk' : 'Safe');
+        const threatType = res.threat_type || (res.is_scam ? 'Suspicious Threat' : 'Legitimate');
+        const isScam = Boolean(res.is_scam);
+
+        resultCard.className = 'result-card';
+        badgeThreatType.textContent = '🏷️ ' + threatType;
+
+        let meterPercent = 10;
+        if (riskLevel.toLowerCase().includes('high') || isScam) {
+            resultCard.classList.add('danger');
+            badgeRisk.textContent = '🚨 High Risk';
+            verdictHeadline.textContent = 'Fraud / Scam Alert Detected';
+            verdictHeadline.style.color = '#f87171';
+            meterPercent = 95;
+        } else if (riskLevel.toLowerCase().includes('medium') || riskLevel.toLowerCase().includes('moderate')) {
+            resultCard.classList.add('moderate');
+            badgeRisk.textContent = '⚠️ Medium Risk';
+            verdictHeadline.textContent = 'Potential Risk / Caution Advised';
+            verdictHeadline.style.color = '#fbbf24';
+            meterPercent = 60;
+        } else {
+            resultCard.classList.add('safe');
+            badgeRisk.textContent = '✅ Safe';
+            verdictHeadline.textContent = 'Legitimate / Verified Safe';
+            verdictHeadline.style.color = '#34d399';
+            meterPercent = 8;
+        }
+
+        meterValue.textContent = `${riskLevel} (${meterPercent}%)`;
+        meterBar.style.width = '0%';
+        explanationText.textContent = res.reason || 'Detailed reasoning not available.';
+
+        resultContainer.style.display = 'block';
+
+        setTimeout(() => {
+            meterBar.style.width = meterPercent + '%';
+        }, 100);
+
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
+
+</body>
+</html>
